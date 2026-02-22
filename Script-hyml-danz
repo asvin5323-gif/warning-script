@@ -1,0 +1,539 @@
+<! html>
+<html langDOCTYPE="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DANZ · DETEKTIF DEWA [SALAH DI KUNCI 10 MENIT]</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #00ff00;
+        }
+
+        .game-container {
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 3rem;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .timer-container {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .timer {
+            display: inline-block;
+            padding: 10px 30px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 50px;
+            color: #00ff00;
+        }
+
+        .timer.warning {
+            color: yellow;
+            border-color: yellow;
+        }
+
+        .timer.danger {
+            color: red;
+            border-color: red;
+            animation: blink 1s infinite;
+        }
+
+        .timer.locked {
+            color: #666;
+            border-color: #666;
+            background: #222;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+
+        .lock-message {
+            color: red;
+            font-size: 1.2rem;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid red;
+            border-radius: 5px;
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .level-badge {
+            background: #00ff00;
+            color: black;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .question {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00ff00;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+
+        .password-input {
+            margin-bottom: 20px;
+        }
+
+        .password-input label {
+            display: block;
+            margin-bottom: 10px;
+            color: #00ff00;
+        }
+
+        .password-input input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            border-radius: 5px;
+        }
+
+        .password-input input:disabled {
+            background: #222;
+            border-color: #666;
+            color: #666;
+        }
+
+        .password-input input:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .submit-btn {
+            background: transparent;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: #00ff00;
+            color: black;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #666;
+            color: #666;
+        }
+
+        .result {
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            min-height: 60px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff6666;
+        }
+
+        .hint-box {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffff00;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .hint-box h4 {
+            color: #ffff00;
+            margin-bottom: 10px;
+        }
+
+        .source-hint {
+            color: #888;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .attempt-counter {
+            color: #888;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container" id="gameContainer">
+        <h1>DANZ<span style="color: red;">?</span></h1>
+        <div class="subtitle">═══ DETEKTIF DEWA [SALAH DI KUNCI 10 MENIT] ═══</div>
+        
+        <div class="timer-container">
+            <div class="timer" id="timerDisplay">10:00</div>
+        </div>
+        
+        <div id="lockMessageContainer"></div>
+        
+        <div id="levelDisplay" class="level-badge">LEVEL 1/5</div>
+        
+        <div id="questionContainer" class="question">
+            Loading pertanyaan...
+        </div>
+        
+        <div class="password-input">
+            <label>🔑 MASUKKAN PASSWORD:</label>
+            <input type="text" id="passwordInput" placeholder="Cari di kode sumber...">
+        </div>
+        
+        <button id="submitBtn" class="submit-btn">VERIFIKASI PASSWORD</button>
+        
+        <div id="resultContainer" class="result"></div>
+        
+        <div class="hint-box">
+            <h4>📋 PETUNJUK DETEKTIF:</h4>
+            <p id="hintText">Buka console (F12) dan cari petunjuk tersembunyi...</p>
+        </div>
+        
+        <div class="source-hint" id="sourceHint">
+            🔍 Tip: Password berubah tiap 10 menit! Cari di kode!
+        </div>
+        
+        <div class="attempt-counter" id="attemptCounter"></div>
+    </div>
+
+    <script>
+        // ==============================================
+        // DANZ GAME V4 - DETEKTIF DEWA
+        // 10 MENIT PER JAWABAN + SALAH DI KUNCI 10 MENIT
+        // AI PUN GAK BISA JAWAB!
+        // ==============================================
+        
+        // ==============================================
+        // GENERATE PASSWORD DINAMIS
+        // ==============================================
+        function generatePassword(level, salt) {
+            // Kombinasi timestamp + salt + level
+            // Hasilnya beda tiap 10 menit
+            const now = Math.floor(Date.now() / 600000); // 10 menit dalam milidetik
+            const hash = (now * level * salt) % 10000;
+            
+            // Mapping ke password
+            const passwords = [
+                "HTML", "11", "CSS", "Brendan Eich", "number"
+            ];
+            
+            // Kombinasi hash dengan password
+            return passwords[level - 1] + "-" + hash;
+        }
+
+        // ==============================================
+        // KONFIGURASI LEVEL
+        // ==============================================
+        const levelConfig = [
+            {
+                id: 1,
+                salt: 1234,
+                question: `LEVEL 1: TEKA-TEKI PEMROGRAMAN\n\nManakah yang BUKAN bahasa pemrograman?\n\nA. Python\nB. Java\nC. HTML\nD. JavaScript\n\nPassword: HTML + kode angka (cek di console)`,
+                hint: "Cek console, cari 'PASSWORD LEVEL 1'",
+                validate: (input) => {
+                    const correct = generatePassword(1, 1234);
+                    return input === correct;
+                }
+            },
+            {
+                id: 2,
+                salt: 5678,
+                question: `LEVEL 2: MATEMATIKA DASAR\n\nBerapa hasil dari 5 + 3 x 2?\n\nA. 16\nB. 11\nC. 13\nD. 10\n\nPassword: 11 + kode angka`,
+                hint: "Cek console, cari 'PASSWORD LEVEL 2'",
+                validate: (input) => {
+                    const correct = generatePassword(2, 5678);
+                    return input === correct;
+                }
+            },
+            {
+                id: 3,
+                salt: 9012,
+                question: `LEVEL 3: KEPANJANGAN\n\nApa kepanjangan dari CSS?\n\nA. Creative Style Sheets\nB. Cascading Style Sheets\nC. Computer Style System\nD. Colorful Style Sheets\n\nPassword: CSS + kode angka`,
+                hint: "Cek console, cari 'PASSWORD LEVEL 3'",
+                validate: (input) => {
+                    const correct = generatePassword(3, 9012);
+                    return input === correct;
+                }
+            },
+            {
+                id: 4,
+                salt: 3456,
+                question: `LEVEL 4: SEJARAH\n\nSiapa pembuat bahasa JavaScript?\n\nA. Brendan Eich\nB. Dennis Ritchie\nC. James Gosling\nD. Guido van Rossum\n\nPassword: Brendan Eich + kode angka`,
+                hint: "Cek console, cari 'PASSWORD LEVEL 4'",
+                validate: (input) => {
+                    const correct = generatePassword(4, 3456);
+                    return input === correct;
+                }
+            },
+            {
+                id: 5,
+                salt: 7890,
+                question: `LEVEL 5: JAVASCRIPT\n\nApa output dari console.log(typeof NaN)?\n\nA. NaN\nB. number\nC. undefined\nD. object\n\nPassword: number + kode angka`,
+                hint: "Cek console, cari 'PASSWORD LEVEL 5'",
+                validate: (input) => {
+                    const correct = generatePassword(5, 7890);
+                    return input === correct;
+                }
+            }
+        ];
+
+        // ==============================================
+        // TAMPILKAN PASSWORD DI CONSOLE
+        // ==============================================
+        console.log("%c🔥🔥🔥 DETEKTIF DEWA - SALAH DI KUNCI 10 MENIT 🔥🔥🔥", "color: orange; font-size: 20px; font-weight: bold");
+        console.log("%c⚠️ PERINGATAN: KALO SALAH JAWAB, DI KUNCI 10 MENIT!", "color: red; font-size: 16px");
+        console.log("%c🔒 INPUT & SUBMIT DISABLE SELAMA LOCK!", "color: yellow; font-size: 14px");
+        console.log("");
+        
+        // Tampilkan password untuk 10 menit ini
+        const now = new Date();
+        console.log("%c⏰ WAKTU SEKARANG: " + now.toLocaleTimeString(), "color: cyan");
+        console.log("%c🔑 PASSWORD UNTUK 10 MENIT INI:", "color: green; font-size: 14px");
+        
+        for (let i = 1; i <= 5; i++) {
+            const salt = [1234, 5678, 9012, 3456, 7890][i-1];
+            const password = generatePassword(i, salt);
+            console.log(`%c   LEVEL ${i}: ${password}`, "color: white; background: #333; padding: 2px 5px; margin: 2px");
+        }
+        
+        console.log("");
+        console.log("%c📌 CARA MAIN:", "color: yellow");
+        console.log("  1. Buka console ini setiap 10 menit");
+        console.log("  2. Password berubah! Cek di atas");
+        console.log("  3. KALO SALAH JAWAB → LOCK 10 MENIT!");
+        console.log("  4. Selama lock, gak bisa ngapa-ngapain");
+        
+        // ==============================================
+        // GAME STATE
+        // ==============================================
+        let currentLevel = 0;
+        let timeLeft = 600; // 10 menit dalam detik
+        let lockTimeLeft = 0; // Waktu lock (kalo salah)
+        let timerInterval;
+        let gameLocked = false;
+        let wrongAttempts = 0;
+        
+        // ==============================================
+        // FUNGSI TIMER
+        // ==============================================
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (gameLocked) {
+                    // Lagi dalam masa lock
+                    lockTimeLeft--;
+                    
+                    const minutes = Math.floor(lockTimeLeft / 60);
+                    const seconds = lockTimeLeft % 60;
+                    const timerDisplay = document.getElementById('timerDisplay');
+                    
+                    timerDisplay.innerHTML = `🔒 ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    timerDisplay.classList.add('locked');
+                    
+                    // Kalo lock selesai
+                    if (lockTimeLeft <= 0) {
+                        gameLocked = false;
+                        document.getElementById('lockMessageContainer').innerHTML = '';
+                        document.getElementById('passwordInput').disabled = false;
+                        document.getElementById('submitBtn').disabled = false;
+                        timerDisplay.classList.remove('locked');
+                        timerDisplay.classList.remove('danger');
+                        timerDisplay.classList.remove('warning');
+                        document.getElementById('timerDisplay').innerHTML = `${Math.floor(timeLeft / 60).toString().padStart(2, '0')}:${(timeLeft % 60).toString().padStart(2, '0')}`;
+                    }
+                    
+                    return;
+                }
+                
+                // Normal timer
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                const timerDisplay = document.getElementById('timerDisplay');
+                const submitBtn = document.getElementById('submitBtn');
+                
+                timerDisplay.innerHTML = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Warning视觉效果
+                if (timeLeft <= 60) {
+                    timerDisplay.classList.add('danger');
+                } else if (timeLeft <= 180) {
+                    timerDisplay.classList.add('warning');
+                }
+                
+                // Kalo waktu habis
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    gameLocked = true;
+                    timerDisplay.innerHTML = "00:00";
+                    timerDisplay.classList.add('danger');
+                    submitBtn.disabled = true;
+                    document.getElementById('passwordInput').disabled = true;
+                    document.getElementById('resultContainer').innerHTML = `
+                        <div class="error">
+                            ❌ WAKTU HABIS! Halaman akan reload dalam 5 detik...
+                        </div>
+                    `;
+                    
+                    setTimeout(() => {
+                        location.reload();
+                    }, 5000);
+                }
+            }, 1000);
+        }
+        
+        // ==============================================
+        // FUNGSI LOCK (KALO SALAH JAWAB)
+        // ==============================================
+        function activateLock() {
+            gameLocked = true;
+            lockTimeLeft = 600; // Lock 10 menit
+            
+            // Disable input dan submit
+            document.getElementById('passwordInput').disabled = true;
+            document.getElementById('submitBtn').disabled = true;
+            
+            // Tampilkan pesan lock
+            document.getElementById('lockMessageContainer').innerHTML = `
+                <div class="lock-message">
+                    🔒 ANDA SALAH JAWAB! DIKUNCI 10 MENIT!
+                    <br>
+                    <small>Gak bisa ngapa-ngapain sampai lock selesai.</small>
+                </div>
+            `;
+            
+            // Update attempt counter
+            wrongAttempts++;
+            document.getElementById('attemptCounter').innerHTML = `⚠️ Salah jawab: ${wrongAttempts}x`;
+            
+            console.log("%c🔒 PLAYER SALAH JAWAB! LOCK 10 MENIT!", "color: red; font-size: 16px");
+        }
+        
+        // ==============================================
+        // FUNGSI LOAD LEVEL
+        // ==============================================
+        function loadLevel() {
+            const level = levelConfig[currentLevel];
+            
+            document.getElementById('levelDisplay').innerHTML = `LEVEL ${level.id}/5`;
+            document.getElementById('questionContainer').innerHTML = level.question.replace(/\n/g, '<br>');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('resultContainer').innerHTML = '';
+            document.getElementById('hintText').innerHTML = level.hint;
+            document.getElementById('sourceHint').innerHTML = `💡 Password: ${generatePassword(level.id, level.salt)} (tapi rahasia!)`;
+            
+            // Reset timer ke 10 menit untuk level baru
+            timeLeft = 600;
+            document.getElementById('timerDisplay').classList.remove('warning', 'danger', 'locked');
+            
+            // Enable input/submit
+            document.getElementById('passwordInput').disabled = false;
+            document.getElementById('submitBtn').disabled = false;
+        }
+        
+        // ==============================================
+        // FUNGSI CHECK PASSWORD
+        // ==============================================
+        function checkPassword() {
+            if (gameLocked) {
+                document.getElementById('resultContainer').innerHTML = `
+                    <div class="error">
+                        ❌ Masih dalam masa lock! Tunggu ${Math.floor(lockTimeLeft/60)} menit ${lockTimeLeft%60} detik.
+                    </div>
+                `;
+                return;
+            }
+            
+            const input = document.getElementById('passwordInput').value;
+            const level = levelConfig[currentLevel];
+            
+            if (level.validate(input)) {
+                // JAWABAN BENAR
+                document.getElementById('resultContainer').innerHTML = `
+                    <div class="success">
+                        ✅ PASSWORD BENAR! Level ${level.id} terpecahkan.
+                    </div>
+                `;
+                
+                if (currentLevel < levelConfig.length - 1) {
+                    setTimeout(() => {
+                        currentLevel++;
+                        loadLevel();
+                    }, 2000);
+                } else {
+                    // Game selesai
+                    clearInterval(timerInterval);
+                    document.getElementById('resultContainer').innerHTML += `
+                        <div class="success" style="margin-top:10px;">
+                            🏆 SELAMAT! KAMU MENJADI DETEKTIF SEJATI!
+                            <br><br>
+                            🔑 KODE RAHASIA: ${generatePassword(999, 1234)}
+                        </div>
+                    `;
+                    document.getElementById('submitBtn').disabled = true;
+                    document.getElementById('passwordInput').disabled = true;
+                }
+            } else {
+                // JAWABAN SALAH → LOCK 10 MENIT!
+                document.getElementById('resultContainer').innerHTML = `
+                    <div class="error">
+                        ❌ PASSWORD SALAH! ANDA DIKUNCI 10 MENIT!
+                        <br>
+                        <small>Gak bisa jawab sampai lock seles
